@@ -42,3 +42,15 @@ env:
 
 create-module:
 	uv run scripts/create_module.py $(path)
+
+db-migrate:
+	alembic revision --autogenerate -m "$(msg)"
+
+db-upgrade:
+	alembic upgrade head
+
+db-downgrade:
+	alembic downgrade -1
+
+db-reset:
+	alembic downgrade base

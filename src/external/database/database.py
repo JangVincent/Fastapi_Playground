@@ -5,7 +5,7 @@ from src.config import settings
 
 # 1) Engine 생성 (Sync 방식)
 engine = create_engine(
-    settings.DATABASE_URL,
+    settings.database_url,
     pool_pre_ping=True,       # DB 연결이 끊겼을 때 자동 재연결
 )
 
