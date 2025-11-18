@@ -39,3 +39,6 @@ test:
 # 환경 변수 출력
 env:
 	.venv/bin/python -c "from src.config import settings; print(settings.model_dump())"
+
+create-module:
+	uv run scripts/create_module.py $(path)
