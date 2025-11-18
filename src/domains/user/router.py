@@ -1,9 +1,9 @@
 
 from fastapi import APIRouter, Depends
 
-from domains.user.schema import (GetUserResponseDto,
-                                 PostUserCreateRequestBodyDto)
-from domains.user.service import UserService
+from src.domains.user.schema import (GetUserResponseDto,
+                                     PostUserCreateRequestBodyDto)
+from src.domains.user.service import UserService
 
 router = APIRouter(prefix ="/users", tags=["users"])
 

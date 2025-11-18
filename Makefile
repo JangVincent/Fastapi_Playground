@@ -17,7 +17,7 @@ install:
 
 # FastAPI development server
 dev:
-	uvicorn main:app --reload --host 0.0.0.0 --port 8000 --app-dir src
+	uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 
 # FastAPI production (예: gunicorn + uvicorn worker)
 prod:
