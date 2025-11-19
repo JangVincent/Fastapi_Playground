@@ -25,7 +25,6 @@ prod:
 
 # 코드 포맷팅
 format:
-	uvx black .
 	uvx ruff check --fix .
 
 # 코드 검사

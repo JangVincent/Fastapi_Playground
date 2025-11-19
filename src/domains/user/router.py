@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.domains.user.schema import (
-    GetUserResponseDto,
-    GetUsersResponseDto,
-    PatchUserRequestBodyDto,
-    PostUserCreateRequestBodyDto,
-)
+from src.domains.user.schema import (GetUserResponseDto, GetUsersResponseDto,
+                                     PatchUserRequestBodyDto,
+                                     PostUserCreateRequestBodyDto)
 from src.domains.user.service import UserService
 from src.external.database.database import get_db
 
