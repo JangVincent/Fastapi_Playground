@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from src.domains.user.schema import (GetUserResponseDto, GetUsersResponseDto,
+                                     PatchUserRequestBodyDto,
                                      PostUserCreateRequestBodyDto)
 from src.domains.user.service import UserService
 from src.external.database.database import get_db
@@ -27,3 +28,13 @@ def get_user(user_id: int, user_service: UserService = Depends(_get_user_service
 def create_user(body : PostUserCreateRequestBodyDto, user_service: UserService = Depends(_get_user_service)):
   new_user = user_service.create_user(body.name)
   return new_user
+
+@router.patch("/{user_id}", response_model=GetUserResponseDto)
+def patch_user(user_id: int, body : PatchUserRequestBodyDto, user_service: UserService = Depends(_get_user_service)):
+  updated_user = user_service.patch_user(user_id, body.name)
+  return updated_user
+
+@router.delete("/{user_id}")
+def delete_user(user_id: int, user_service: UserService = Depends(_get_user_service)):
+  user_service.delete_user(user_id)
+  return {"message": "User #" + str(user_id) + " deleted successfully."}

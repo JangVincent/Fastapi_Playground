@@ -27,3 +27,11 @@ class UserRepository:
         new_user = User(name=name)
         self.session.add(new_user)
         return new_user
+
+    def update_user(self, user: User, new_name: str):
+        user.name = new_name
+        self.session.add(user)
+        return user
+    
+    def delete_user(self, user: User):
+        self.session.delete(user)

@@ -13,3 +13,6 @@ class GetUserResponseDto(UserBase):
 
 class GetUsersResponseDto(BaseModel):
   users: list[UserBase]
+
+class PatchUserRequestBodyDto(BaseModel):
+  name: str
