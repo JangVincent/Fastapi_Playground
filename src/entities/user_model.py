@@ -11,6 +11,7 @@ class User(Base):
 
 class UserRepository:
     from sqlalchemy.orm import Session
+
     def __init__(self, session: Session):
         self.session = session
 
@@ -19,7 +20,7 @@ class UserRepository:
 
     def get_user_by_id(self, user_id: int):
         return self.session.query(User).filter(User.id == user_id).first()
-    
+
     def get_user_by_name(self, name: str):
         return self.session.query(User).filter(User.name == name).first()
 
@@ -32,6 +33,6 @@ class UserRepository:
         user.name = new_name
         self.session.add(user)
         return user
-    
+
     def delete_user(self, user: User):
         self.session.delete(user)

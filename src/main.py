@@ -8,6 +8,7 @@ app.include_router(
     router=user_router,
 )
 
+
 @app.get("/")
 def health():
     return {"status": "ok"}
