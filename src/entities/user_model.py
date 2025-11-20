@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import Session
 
 from src.external.database.base import Base
 
@@ -10,8 +11,6 @@ class User(Base):
 
 
 class UserRepository:
-    from sqlalchemy.orm import Session
-
     def __init__(self, session: Session):
         self.session = session
 
