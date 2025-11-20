@@ -7,7 +7,6 @@ from src.core.logger import init_logger
 from src.domains.user.router import router as user_router
 
 init_logger()
-logger = logging.getLogger(__name__)
 
 app = FastAPI(
     redoc_url=None if settings.environment == "prod" else "/redoc",
@@ -19,6 +18,10 @@ app.include_router(
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 @app.get("/")
 def health():
+    logger.info("Health check endpoint called")
     return {"status": "ok"}
