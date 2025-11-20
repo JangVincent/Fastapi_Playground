@@ -1,3 +1,7 @@
+from typing import List
+
+from src.domains.user.response_schema import GetUserResponseDto, UserBaseDto
+from src.entities.user_model import User
 from src.external.database.unit_of_work import UnitOfWork
 from src.external.database.uow_decorator import UoW
 
@@ -6,15 +10,17 @@ class UserService:
     uow: UnitOfWork  # 타입힌트만 (실제 할당 없음)
 
     @UoW
-    def get_users(self):
-        return self.uow.users.get_all_users()
+    def get_users(self) -> List[UserBaseDto]:
+        users = self.uow.users.get_all_users()
+        parsed_users = [UserBaseDto.dto_parse(user) for user in users]
+        return parsed_users
 
     @UoW
     def get_user(self, user_id: int):
         user = self.uow.users.get_user_by_id(user_id)
         if not user:
             raise Exception("User not found.")
-        return user
+        return UserBaseDto.dto_parse(user)
 
     @UoW
     def create_user(self, name: str):
@@ -22,7 +28,7 @@ class UserService:
         if exist:
             raise Exception("User exists")
 
-        return self.uow.users.create_user(name)
+        return UserBaseDto.dto_parse(self.uow.users.create_user(name))
 
     @UoW
     def patch_user(self, user_id: int, new_name: str):
@@ -30,11 +36,11 @@ class UserService:
         if not user:
             raise Exception("User not found.")
 
-        conflict = self.uow.users.get_user_by_name(new_name)
-        if conflict and conflict.id != user_id:
+        duplicated_name_user = self.uow.users.get_user_by_name(new_name)
+        if duplicated_name_user and duplicated_name_user.id != user_id:
             raise Exception("User with same name exists")
 
-        return self.uow.users.update_user(user, new_name)
+        return UserBaseDto.dto_parse(self.uow.users.update_user(user, new_name))
 
     @UoW
     def delete_user(self, user_id: int):
@@ -43,4 +49,6 @@ class UserService:
             raise Exception("User not found.")
 
         self.uow.users.delete_user(user)
-        return True
+        remain_count = self.uow.users.get_users_count()
+
+        return {"deleted_user": UserBaseDto.dto_parse(user), "remain_count": remain_count}

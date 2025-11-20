@@ -14,6 +14,9 @@ class UserRepository:
     def __init__(self, session: Session):
         self.session = session
 
+    def get_users_count(self):
+        return self.session.query(User).count()
+
     def get_all_users(self):
         return self.session.query(User).all()
 
@@ -26,12 +29,15 @@ class UserRepository:
     def create_user(self, name: str):
         new_user = User(name=name)
         self.session.add(new_user)
+        self.session.flush()
         return new_user
 
     def update_user(self, user: User, new_name: str):
         user.name = new_name
         self.session.add(user)
+        self.session.flush()
         return user
 
     def delete_user(self, user: User):
         self.session.delete(user)
+        self.session.flush()
