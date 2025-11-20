@@ -1,10 +1,11 @@
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 
 from src.config import settings
+from src.core.exception.global_exception_filter import GlobalExceptionFilter
 from src.core.logger import init_logger
-from src.core.middleware.global_exception_middleware import GlobalExceptionMiddleware
 from src.domains.user.router import router as user_router
 
 init_logger()
@@ -14,11 +15,14 @@ app = FastAPI(
     docs_url=None if settings.environment == "prod" else "/docs",
 )
 
+
 app.include_router(
     router=user_router,
 )
 
-app.add_middleware(GlobalExceptionMiddleware)
+app.add_exception_handler(RequestValidationError, GlobalExceptionFilter())
+app.add_exception_handler(HTTPException, GlobalExceptionFilter())
+app.add_exception_handler(Exception, GlobalExceptionFilter())
 
 logger = logging.getLogger(__name__)
 
