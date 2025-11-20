@@ -56,7 +56,7 @@ class GlobalExceptionFilter:
             content={
                 "success": False,
                 "status": exc.status,
-                "message": exc.message,
+                "message": http.HTTPStatus(exc.status),
                 "optional_message": exc.optional_message,
                 "data": exc.data,
             },
