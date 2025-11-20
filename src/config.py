@@ -9,6 +9,7 @@ load_dotenv()
 
 class Settings(BaseModel):
     database_url: str = os.getenv("DATABASE_URL")
+    environment: str = os.getenv("ENVIRONMENT", "dev")
 
 
 settings = Settings()
