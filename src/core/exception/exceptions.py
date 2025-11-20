@@ -1,6 +1,3 @@
-# src/core/exceptions.py
-
-
 class BaseError(Exception):
     def __init__(self, status: int, message: str, optional_message: str = None, data=None):
         self.success = False
