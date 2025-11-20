@@ -48,4 +48,5 @@ def patch_user(
 
 @router.delete("/{user_id}", response_model=DeleteUserResponseDto)
 def delete_user(user_id: int, user_service: UserService = Depends(_get_service)):
-    return user_service.delete_user(user_id)
+    deleted_user, remain_count = user_service.delete_user(user_id)
+    return DeleteUserResponseDto.dto_parse(deleted_user=deleted_user, remain_count=remain_count)

@@ -51,4 +51,4 @@ class UserService:
         self.uow.users.delete_user(user)
         remain_count = self.uow.users.get_users_count()
 
-        return {"deleted_user": UserBaseDto.dto_parse(user), "remain_count": remain_count}
+        return UserBaseDto.dto_parse(user), remain_count
