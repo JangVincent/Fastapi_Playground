@@ -1,9 +1,11 @@
-from typing import List
+import logging
+from typing import List, Tuple
 
-from src.domains.user.response_schema import GetUserResponseDto, UserBaseDto
-from src.entities.user_model import User
+from src.domains.user.response_schema import UserBaseDto
 from src.external.database.unit_of_work import UnitOfWork
 from src.external.database.uow_decorator import UoW
+
+logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -16,14 +18,14 @@ class UserService:
         return parsed_users
 
     @UoW
-    def get_user(self, user_id: int):
+    def get_user(self, user_id: int) -> UserBaseDto:
         user = self.uow.users.get_user_by_id(user_id)
         if not user:
             raise Exception("User not found.")
         return UserBaseDto.dto_parse(user)
 
     @UoW
-    def create_user(self, name: str):
+    def create_user(self, name: str) -> UserBaseDto:
         exist = self.uow.users.get_user_by_name(name)
         if exist:
             raise Exception("User exists")
@@ -31,7 +33,7 @@ class UserService:
         return UserBaseDto.dto_parse(self.uow.users.create_user(name))
 
     @UoW
-    def patch_user(self, user_id: int, new_name: str):
+    def patch_user(self, user_id: int, new_name: str) -> UserBaseDto:
         user = self.uow.users.get_user_by_id(user_id)
         if not user:
             raise Exception("User not found.")
@@ -43,7 +45,7 @@ class UserService:
         return UserBaseDto.dto_parse(self.uow.users.update_user(user, new_name))
 
     @UoW
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> Tuple[UserBaseDto, int]:
         user = self.uow.users.get_user_by_id(user_id)
         if not user:
             raise Exception("User not found.")
