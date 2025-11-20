@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from src.config import settings
 
 # 1) Engine 생성 (Sync 방식)
-engine = create_engine(
+engine = create_engine(  # engine: 실제 DB와 커넥션을 관리하는 "커넥션 풀" 단위 객체
     settings.database_url,
     pool_pre_ping=True,  # DB 연결이 끊겼을 때 자동 재연결
 )
@@ -18,9 +18,9 @@ SessionLocal = sessionmaker(
 
 
 # 3) FastAPI에서 사용할 DB 세션 DI
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
