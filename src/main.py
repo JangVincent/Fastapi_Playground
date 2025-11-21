@@ -6,18 +6,18 @@ from fastapi.exceptions import RequestValidationError
 from src.config import settings
 from src.core.exception.global_exception_filter import GlobalExceptionFilter
 from src.core.logger import init_logger
-from src.domains.user.router import router as user_router
+from src.domains.router import domain_router
 
 init_logger()
 
-app = FastAPI(
+app: FastAPI = FastAPI(
     redoc_url=None if settings.environment == "prod" else "/redoc",
     docs_url=None if settings.environment == "prod" else "/docs",
 )
 
 
 app.include_router(
-    router=user_router,
+    router=domain_router,
 )
 
 app.add_exception_handler(RequestValidationError, GlobalExceptionFilter())

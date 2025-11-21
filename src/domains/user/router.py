@@ -8,7 +8,7 @@ from src.domains.user.schema_response import (
 )
 from src.domains.user.service import UserService
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 def _get_service():
