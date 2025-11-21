@@ -4,6 +4,7 @@
 PYTHON=.venv/bin/python
 UV=.venv/bin/uv
 UVX=uvx   # uvx는 글로벌 PATH에서 실행 가능
+DB_URL = postgresql+psycopg2://postgres:postgres@localhost:5432/[database]
 
 # ===== Commands =====
 
@@ -53,3 +54,6 @@ db-downgrade:
 
 db-reset:
 	alembic downgrade base
+
+db-pull:
+	uvx --with=psycopg2-binary sqlacodegen $(DB_URL) --outfile src/entities/all-models.py
