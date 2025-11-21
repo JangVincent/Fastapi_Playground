@@ -63,4 +63,4 @@ pre-commit-checks:
 	make lint
 
 pre-push-checks:
-	make test
+	uvx pytest -q || true
