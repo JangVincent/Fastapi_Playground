@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from src.domains.user.request_schema import PatchUserRequestBodyDto, PostUserCreateRequestBodyDto
-from src.domains.user.response_schema import (
+from src.domains.user.schema_request import PatchUserRequestBodyDto, PostUserCreateRequestBodyDto
+from src.domains.user.schema_response import (
     DeleteUserResponseDto,
     GetUserResponseDto,
     GetUsersResponseDto,

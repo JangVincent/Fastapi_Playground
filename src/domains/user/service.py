@@ -2,7 +2,7 @@ import logging
 from typing import List, Tuple
 
 from src.core.exception.exceptions import ConflictError, NotFoundError
-from src.domains.user.response_schema import UserBaseDto
+from src.domains.user.schema_response import UserBaseDto
 from src.external.database.unit_of_work import AsyncUnitOfWork
 from src.external.database.uow_decorator import UoW
 
