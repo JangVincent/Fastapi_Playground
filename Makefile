@@ -57,3 +57,10 @@ db-reset:
 
 db-pull:
 	uvx --with=psycopg2-binary sqlacodegen $(DB_URL) --outfile src/entities/all-models.py
+
+pre-commit-checks:
+	make format
+	make lint
+
+pre-push-checks:
+	make test

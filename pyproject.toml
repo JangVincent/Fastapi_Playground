@@ -22,3 +22,8 @@ line-length = 100
 
 [tool.ruff.format]
 indent-style = "space"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.4.0",
+]

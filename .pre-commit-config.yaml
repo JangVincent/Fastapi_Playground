@@ -1,0 +1,16 @@
+repos:
+  - repo: local
+    hooks:
+      # 1) pre-commit 실행
+      - id: pre-commit-checks
+        name: Run pre-commit checks
+        entry: make pre-commit-checks
+        language: system
+        stages: [pre-commit]
+
+      # 2) pre-push 실행
+      - id: pre-push-checks
+        name: Run pre-push checks
+        entry: make pre-push-checks
+        language: system
+        stages: [pre-push]
