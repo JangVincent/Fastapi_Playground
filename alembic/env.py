@@ -56,7 +56,7 @@ def run_migrations_online() -> None:
     """
     from src.config import settings
 
-    config.set_main_option("sqlalchemy.url", settings.database_url)
+    config.set_main_option("sqlalchemy.url", settings.database_url_sync)
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",

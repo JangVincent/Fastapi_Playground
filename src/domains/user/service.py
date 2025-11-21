@@ -1,56 +1,59 @@
 import logging
 from typing import List, Tuple
 
+from src.core.exception.exceptions import ConflictError, NotFoundError
 from src.domains.user.response_schema import UserBaseDto
-from src.external.database.unit_of_work import UnitOfWork
+from src.external.database.unit_of_work import AsyncUnitOfWork
 from src.external.database.uow_decorator import UoW
 
 logger = logging.getLogger(__name__)
 
 
 class UserService:
-    uow: UnitOfWork  # 타입힌트만 (실제 할당 없음)
+    uow: AsyncUnitOfWork  # 타입힌트만 (실제 할당 없음)
 
     @UoW
-    def get_users(self) -> List[UserBaseDto]:
-        users = self.uow.users.get_all_users()
+    async def get_users(self) -> List[UserBaseDto]:
+        users = await self.uow.users.get_all_users()
         parsed_users = [UserBaseDto.dto_parse(user) for user in users]
         return parsed_users
 
     @UoW
-    def get_user(self, user_id: int) -> UserBaseDto:
-        user = self.uow.users.get_user_by_id(user_id)
+    async def get_user(self, user_id: int) -> UserBaseDto:
+        user = await self.uow.users.get_user_by_id(user_id)
         if not user:
-            raise Exception("User not found.")
+            raise NotFoundError("User not found")
         return UserBaseDto.dto_parse(user)
 
     @UoW
-    def create_user(self, name: str) -> UserBaseDto:
-        exist = self.uow.users.get_user_by_name(name)
+    async def create_user(self, name: str) -> UserBaseDto:
+        exist = await self.uow.users.get_user_by_name(name)
         if exist:
-            raise Exception("User exists")
+            raise ConflictError("User already exists")
 
-        return UserBaseDto.dto_parse(self.uow.users.create_user(name))
+        new_user = await self.uow.users.create_user(name)
+        return UserBaseDto.dto_parse(new_user)
 
     @UoW
-    def patch_user(self, user_id: int, new_name: str) -> UserBaseDto:
-        user = self.uow.users.get_user_by_id(user_id)
+    async def patch_user(self, user_id: int, new_name: str) -> UserBaseDto:
+        user = await self.uow.users.get_user_by_id(user_id)
         if not user:
-            raise Exception("User not found.")
+            raise NotFoundError("User not found")
 
-        duplicated_name_user = self.uow.users.get_user_by_name(new_name)
+        duplicated_name_user = await self.uow.users.get_user_by_name(new_name)
         if duplicated_name_user and duplicated_name_user.id != user_id:
-            raise Exception("User with same name exists")
+            raise Exception("Same name user already exists")
 
-        return UserBaseDto.dto_parse(self.uow.users.update_user(user, new_name))
+        patched_user = await self.uow.users.update_user(user, new_name)
+        return UserBaseDto.dto_parse(patched_user)
 
     @UoW
-    def delete_user(self, user_id: int) -> Tuple[UserBaseDto, int]:
-        user = self.uow.users.get_user_by_id(user_id)
+    async def delete_user(self, user_id: int) -> Tuple[UserBaseDto, int]:
+        user = await self.uow.users.get_user_by_id(user_id)
         if not user:
-            raise Exception("User not found.")
+            raise NotFoundError("User not found")
 
-        self.uow.users.delete_user(user)
-        remain_count = self.uow.users.get_users_count()
+        await self.uow.users.delete_user(user)
+        remain_count = await self.uow.users.get_users_count()
 
         return UserBaseDto.dto_parse(user), remain_count

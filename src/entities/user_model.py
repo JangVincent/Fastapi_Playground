@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import Session
+from typing import List
+
+from sqlalchemy import Column, Integer, String, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.external.database.base import Base
 
@@ -11,33 +13,39 @@ class UserModel(Base):
 
 
 class UserRepository:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
-    def get_users_count(self):
-        return self.session.query(UserModel).count()
+    async def get_users_count(self) -> int:
+        result = await self.session.execute(select(func.count()).select_from(UserModel))
+        return result.scalar()
 
-    def get_all_users(self):
-        return self.session.query(UserModel).all()
+    async def get_all_users(self) -> List[UserModel]:
+        return (await self.session.execute(select(UserModel))).scalars().all()
 
-    def get_user_by_id(self, user_id: int):
-        return self.session.query(UserModel).filter(UserModel.id == user_id).first()
+    async def get_user_by_id(self, user_id: int) -> UserModel | None:
+        return (
+            await self.session.execute(select(UserModel).filter(UserModel.id == user_id))
+        ).scalar_one_or_none()
 
-    def get_user_by_name(self, name: str):
-        return self.session.query(UserModel).filter(UserModel.name == name).first()
+    async def get_user_by_name(self, name: str) -> UserModel | None:
+        return (
+            await self.session.execute(select(UserModel).filter(UserModel.name == name))
+        ).scalar_one_or_none()
 
-    def create_user(self, name: str):
-        new_user = UserModel(name=name)
-        self.session.add(new_user)
-        self.session.flush()
-        return new_user
-
-    def update_user(self, user: UserModel, new_name: str):
-        user.name = new_name
+    async def create_user(self, name: str) -> UserModel:
+        user = UserModel(name=name)
         self.session.add(user)
-        self.session.flush()
+        await self.session.flush()
         return user
 
-    def delete_user(self, user: UserModel):
-        self.session.delete(user)
-        self.session.flush()
+    async def update_user(self, user: UserModel, new_name: str) -> UserModel:
+        user.name = new_name
+        self.session.add(user)
+        await self.session.flush()
+        return user
+
+    async def delete_user(self, user: UserModel) -> None:
+        await self.session.delete(user)
+        await self.session.flush()
+        await self.session.flush()

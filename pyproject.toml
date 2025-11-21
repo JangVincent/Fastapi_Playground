@@ -4,11 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
+
+# psycopg2-binary for 'Alembic' only
 dependencies = [
     "alembic>=1.17.2",
     "asyncpg>=0.30.0",
     "fastapi>=0.121.2",
     "gunicorn>=23.0.0",
+    "psycopg2-binary>=2.9.11",
     "python-dotenv>=1.2.1",
     "sqlalchemy[asyncio]>=2.0.44",
     "uvicorn[standard]>=0.38.0",
