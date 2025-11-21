@@ -1,26 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from src.config import settings
 
-# 1) Engine 생성 (Sync 방식)
-engine = create_engine(  # engine: 실제 DB와 커넥션을 관리하는 "커넥션 풀" 단위 객체
-    settings.database_url,
-    pool_pre_ping=True,  # DB 연결이 끊겼을 때 자동 재연결
+# 1) Async Engine 생성
+engine = create_async_engine(
+    settings.database_url,  # postgresql+asyncpg://user:pass@...
+    echo=False,
+    pool_pre_ping=True,
 )
 
-# 2) SessionLocal 생성 (ORM 세션)
-SessionLocal = sessionmaker(
+
+# 2) Async SessionLocal 생성
+SessionLocal = async_sessionmaker(
     bind=engine,
     autoflush=False,
     autocommit=False,
+    expire_on_commit=False,
+    class_=AsyncSession,
 )
 
 
-# 3) FastAPI에서 사용할 DB 세션 DI
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
+# 3) FastAPI Dependency
+async def get_db():
+    async with SessionLocal() as session:
+        yield session

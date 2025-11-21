@@ -1,59 +1,71 @@
 from functools import wraps
 
 from src.external.database.database import SessionLocal
-from src.external.database.unit_of_work import UnitOfWork
+from src.external.database.unit_of_work import AsyncUnitOfWork
 
 
 def UoW(func):
     """
-    Decorator that wraps a service method inside a Unit of Work.
+    Async Unit of Work (UoW) decorator for service-layer methods.
+
+    This decorator creates a new AsyncUnitOfWork instance per method call,
+    injects it into the service instance as `self.uow`, executes the method inside
+    an `async with` transactional boundary, and removes the UoW afterward.
 
     IMPORTANT
     ---------
     The service class using this decorator **must not be a singleton**.
-    A new service instance must be created **per request**.
+    A new service instance **must be created per request**.
     Otherwise:
-      - multiple concurrent requests may overwrite `self.uow`
-      - sessions may mix across requests
+      - concurrent requests may overwrite `self.uow`
+      - AsyncSessions may leak across requests
       - transactions may interfere with each other
-      - race conditions and data integrity issues can occur
+      - data corruption or race conditions may occur
 
     Summary of Behavior
     -------------------
-    - Creates a fresh UnitOfWork (UoW) per method call.
-    - Injects `self.uow` into the service instance.
-    - Executes the method inside a transactional `with uow:`.
-    - Removes `self.uow` after execution.
+    - Creates a fresh AsyncUnitOfWork for each decorated method call.
+    - Binds the UoW instance to `self.uow`.
+    - Executes the method inside `async with uow:` (transaction boundary).
+    - Automatically commits on success, and rolls back on exceptions.
+    - Cleans up `self.uow` after the method finishes.
 
     Restrictions
     ------------
-    - Do NOT call another @UoW method from inside an @UoW method.
-      Use `self.uow` directly instead.
-    - Service instances must be request-scoped, not shared.
+    - Do NOT call another @UoW method from inside a @UoW method.
+      Nested UoWs create multiple independent transactions and break
+      transactional consistency. Use `self.uow` directly instead.
+    - Service instances must be request-scoped. Do not reuse a single
+      service instance across multiple requests.
 
     Example
     -------
-        @UoW
-        def create_user(self, name: str):
-            exist = self.uow.users.get_user_by_name(name)
-            if exist:
-                raise UserAlreadyExists()
-            return self.uow.users.create_user(name)
+        class UserService:
+
+            @UoW
+            async def create_user(self, data):
+                # Access repositories through a shared AsyncSession
+                exist = await self.uow.users.get_by_email(data.email)
+                if exist:
+                    raise UserAlreadyExists()
+
+                user = await self.uow.users.create(data)
+                return user
 
     Parameters
     ----------
     func : Callable
-        The service method to wrap.
+        The async service method to wrap in a UoW transactional boundary.
     """
 
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        uow = UnitOfWork(SessionLocal)
+    async def wrapper(self, *args, **kwargs):
+        uow = AsyncUnitOfWork(SessionLocal)
         self.uow = uow
 
         try:
-            with uow:
-                return func(self, *args, **kwargs)
+            async with uow:
+                return await func(self, *args, **kwargs)
         finally:
             del self.uow
 
