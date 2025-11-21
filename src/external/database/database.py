@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from src.config import settings
 
-# 1) Async Engine 생성
 engine = create_async_engine(
     settings.database_url,  # postgresql+asyncpg://user:pass@...
     echo=False,
@@ -10,7 +9,6 @@ engine = create_async_engine(
 )
 
 
-# 2) Async SessionLocal 생성
 SessionLocal = async_sessionmaker(
     bind=engine,
     autoflush=False,
@@ -20,7 +18,6 @@ SessionLocal = async_sessionmaker(
 )
 
 
-# 3) FastAPI Dependency
-# async def get_db():
-#     async with SessionLocal() as session:
-#         yield session
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
