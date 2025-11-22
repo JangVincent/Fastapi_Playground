@@ -6,6 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from src.config import settings
 from src.core.exception.global_exception_filter import GlobalExceptionFilter
 from src.core.logger import init_logger
+from src.core.middleware.response_middleware import UnifiedResponseMiddleware
 from src.domains.router import domain_router
 
 init_logger()
@@ -23,6 +24,8 @@ app.include_router(
 app.add_exception_handler(RequestValidationError, GlobalExceptionFilter())
 app.add_exception_handler(HTTPException, GlobalExceptionFilter())
 app.add_exception_handler(Exception, GlobalExceptionFilter())
+
+app.add_middleware(UnifiedResponseMiddleware)
 
 logger = logging.getLogger(__name__)
 
