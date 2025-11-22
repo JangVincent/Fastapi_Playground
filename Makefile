@@ -4,7 +4,7 @@
 PYTHON=.venv/bin/python
 UV=.venv/bin/uv
 UVX=uvx   # uvx는 글로벌 PATH에서 실행 가능
-DB_URL = postgresql+psycopg2://postgres:postgres@localhost:5432/[database]
+DB_URL = postgresql+psycopg2://postgres:postgres@localhost:5432/fastapi
 
 # ===== Commands =====
 
