@@ -7,7 +7,7 @@ from src.config import settings
 from src.core.exception.global_exception_filter import GlobalExceptionFilter
 from src.core.logger import init_logger
 from src.core.middleware.response_middleware import UnifiedResponseMiddleware
-from src.domains.router import domain_router
+from src.domains.router_aggregator import aggregated_router
 
 init_logger()
 
@@ -18,7 +18,7 @@ app: FastAPI = FastAPI(
 
 
 app.include_router(
-    router=domain_router,
+    router=aggregated_router,
 )
 
 app.add_exception_handler(RequestValidationError, GlobalExceptionFilter())
